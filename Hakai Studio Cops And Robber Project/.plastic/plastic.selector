@@ -1,0 +1,4 @@
+repository "Hakai Studio Cops And Robber@HakaiStudios@cloud"
+  path "/"
+    br "/main"
+    co "/main"
