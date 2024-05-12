@@ -5951,8 +5951,8 @@ GameObject:
   - component: {fileID: 2417994426872899627}
   - component: {fileID: 5161818037725995926}
   - component: {fileID: 8577141439811071240}
-  m_Layer: 0
-  m_Name: Cube
+  m_Layer: 2
+  m_Name: Player Temp View
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
