@@ -85,7 +85,7 @@ public class PlayerController : NetworkBehaviour
     //void Update()
     //{
     //    if (!HasStateAuthority) return;
- 
+
     //    if (freeze) return;
 
     //    CheckMoving();
@@ -96,6 +96,15 @@ public class PlayerController : NetworkBehaviour
     //    if (enableCameraLook) CameraLook();
     //    if (enableStepSlope) StepSlope();
     //}
+
+    public void Update()
+    {
+        if (!HasStateAuthority) { Debug.Log($"This {Runner.LocalPlayer} does not have authority!"); return; }
+
+        if (freeze) return;
+
+        if (enableCameraLook) CameraLook();
+    }
 
     public override void FixedUpdateNetwork()
     {
@@ -108,7 +117,7 @@ public class PlayerController : NetworkBehaviour
         if (enableMove) Movement();
         if (enableSprint) Sprint();
         if (enableJump) Jump();
-        if (enableCameraLook) CameraLook();
+        //if (enableCameraLook) CameraLook();
         if (enableStepSlope) StepSlope();
     }
 
