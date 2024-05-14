@@ -595,7 +595,7 @@ MonoBehaviour:
   isMoving: 0
   playerSpeed: 0
   diagonalSpeed: 7.071068
-  jumpForce: 15
+  jumpForce: 500
   stepRayUpper: {fileID: 9003055621771455426}
   stepRayLower: {fileID: 838303905486385464}
   stepWidth: 1.2
@@ -652,7 +652,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d5a57f767e5e46a458fc5d3c628d0cbb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  GlobalObjectIdHash: 519083868
+  GlobalObjectIdHash: 1513944814
   InScenePlacedSourceGlobalObjectIdHash: 0
   AlwaysReplicateAsRoot: 0
   SynchronizeTransform: 1

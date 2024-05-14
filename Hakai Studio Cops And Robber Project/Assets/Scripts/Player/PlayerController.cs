@@ -97,7 +97,7 @@ public class PlayerController : NetworkBehaviour
     //    if (enableStepSlope) StepSlope();
     //}
 
-    public void Update()
+    private void Update()
     {
         if (!HasStateAuthority) { Debug.Log($"This {Runner.LocalPlayer} does not have authority!"); return; }
 
