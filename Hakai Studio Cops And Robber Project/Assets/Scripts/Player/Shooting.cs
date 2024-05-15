@@ -1,7 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
-using Unity.Netcode;
+using Fusion;
 using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.UI;
@@ -45,7 +45,7 @@ public class Shooting : NetworkBehaviour
 
     void Start()
     {
-        if (IsLocalPlayer)
+        if (HasStateAuthority)
         {
             weaponSwitcher = this.gameObject.GetComponent<WeaponSwitcherScript>();
             weaponRecoil = transform.GetChild(0).GetComponent<WeaponRecoil>();
@@ -169,6 +169,11 @@ public class Shooting : NetworkBehaviour
         {
             TakeDamageScript takeDamage = hit.collider.GetComponent<TakeDamageScript>();
             takeDamage.TakeDamage(10);
+        }
+
+        if (hit.transform.TryGetComponent<PlayerHealth>(out var health))
+        {
+            health.DealDamageRpc(10);
         }
     }
 }

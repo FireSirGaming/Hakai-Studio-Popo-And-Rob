@@ -104,6 +104,7 @@ public class PlayerController : NetworkBehaviour
         if (freeze) return;
 
         if (enableCameraLook) CameraLook();
+        if (enableJump) Jump();
     }
 
     public override void FixedUpdateNetwork()
@@ -116,7 +117,7 @@ public class PlayerController : NetworkBehaviour
         if (enableGravity) Gravity();
         if (enableMove) Movement();
         if (enableSprint) Sprint();
-        if (enableJump) Jump();
+        //if (enableJump) Jump();
         //if (enableCameraLook) CameraLook();
         if (enableStepSlope) StepSlope();
     }
