@@ -17,13 +17,12 @@ public class PlayerHealth : NetworkBehaviour
     [SerializeField] private float currentRespawnTime;
 
     //this is to get all the player compoents
-    [SerializeField] private CapsuleCollider notTrigger;
-    [SerializeField] private CapsuleCollider trigger;
-    [SerializeField] private PlayerProperties playerProperties;
-    [SerializeField] private PlayerController playerController;
-    [SerializeField] private GameObject playerCanvas;
-    [SerializeField] private GameObject WeaponCamera;
-    [SerializeField] private GameObject capsule;
+    [SerializeField] private List <MonoBehaviour> scripts = new List<MonoBehaviour>();
+    [SerializeField] private List <CapsuleCollider> capsules = new List<CapsuleCollider>();
+    [SerializeField] private List <GameObject> gameObjects = new List<GameObject>();
+
+    [SerializeField] private TextMeshProUGUI dieText;
+    [SerializeField] private TextMeshProUGUI respawnCountdown;
 
     private void Awake()
     {
@@ -34,6 +33,8 @@ public class PlayerHealth : NetworkBehaviour
     {
         NetworkHealth = 100;
         currentRespawnTime = maxRespawnTime;
+        dieText.enabled = false;
+        respawnCountdown.enabled = false;
     }
 
     private void Update()
@@ -41,6 +42,8 @@ public class PlayerHealth : NetworkBehaviour
         if (die)
         {
             currentRespawnTime -= Time.deltaTime;
+
+            respawnCountdown.text = $"Respawn in: {currentRespawnTime.ToString("F0")}s";
 
             if (currentRespawnTime <= 0f)
             {
@@ -72,25 +75,46 @@ public class PlayerHealth : NetworkBehaviour
 
     public void Die()
     {
-        WeaponCamera.SetActive(false);
-        playerCanvas.SetActive(false);
-        notTrigger.enabled = false;
-        trigger.enabled = false;
-        playerProperties.enabled = false;
-        playerController.enabled = false;
-        capsule.SetActive(false);
+        foreach (MonoBehaviour script in scripts)
+        {
+            script.enabled = false;
+        }
+
+        foreach (CapsuleCollider capsule in capsules)
+        {
+            capsule.enabled = false;
+        }
+
+        foreach (GameObject gameObject in gameObjects)
+        {
+            gameObject.SetActive(false);
+        }
+
+        dieText.enabled = true;
+        respawnCountdown.enabled = true;
     }
 
     public void Respawn()
     {
         NetworkHealth = 100;
         this.gameObject.transform.position = new Vector3(-11.5f, 4f, -490f);
-        WeaponCamera.SetActive(true);
-        playerCanvas.SetActive(true);
-        notTrigger.enabled = true;
-        trigger.enabled = true;
-        playerProperties.enabled = true;
-        playerController.enabled = true;
-        capsule.SetActive(true);
+
+        foreach (MonoBehaviour script in scripts)
+        {
+            script.enabled = true;
+        }
+
+        foreach (CapsuleCollider capsule in capsules)
+        {
+            capsule.enabled = true;
+        }
+
+        foreach (GameObject gameObject in gameObjects)
+        {
+            gameObject.SetActive(true);
+        }
+
+        dieText.enabled = false;
+        respawnCountdown.enabled = false;
     }
 }
