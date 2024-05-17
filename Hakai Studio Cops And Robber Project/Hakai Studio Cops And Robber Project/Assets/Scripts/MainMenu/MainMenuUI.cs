@@ -8,13 +8,13 @@ public class MainMenuUI : MonoBehaviour
     [SerializeField] private Button playButton;
     [SerializeField] private Button quitButton;
 
-    [SerializeField] private GameObject findMatchGameObject;
+    [SerializeField] private GameObject createAndJoinGameObject;
 
     private void Awake()
     {
         playButton.onClick.AddListener(() =>
         {
-            findMatchGameObject.SetActive(true);
+            createAndJoinGameObject.SetActive(true);
             gameObject.SetActive(false);
         });
 

@@ -1,115 +1,112 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using Unity.Netcode;
-using Unity.Services.Multiplay;
+using Fusion;
+using TMPro;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class PlayerReadyManager : NetworkBehaviour
 {
-    //public static event EventHandler OnInstanceCreated;
-
-    //public static void ResetStaticData()
-    //{
-    //    OnInstanceCreated = null;
-    //}
-
     public static PlayerReadyManager Instance { get; private set; }
 
-    //public event EventHandler OnReadyChanged;
-    //public event EventHandler OnGameStarting;
+    private Dictionary<PlayerRef, bool> playerReadyDictionary = new Dictionary<PlayerRef, bool>();
+    public Dictionary<PlayerRef, bool> PlayerReadyDictionary { get { return playerReadyDictionary; } }
 
+    [SerializeField] private TextMeshProUGUI playerReadyText;
 
-    private Dictionary<ulong, bool> playerReadyDictionary;
+    int playerReady;
 
     private void Awake()
     {
         Instance = this;
 
-        playerReadyDictionary = new Dictionary<ulong, bool>();
-
-        //OnInstanceCreated?.Invoke(this, EventArgs.Empty);
+        playerReadyText = GameObject.FindAnyObjectByType<PlayerReady>().GetComponentInChildren<TextMeshProUGUI>();
     }
 
-    private async void Start()
+    private void Start()
     {
-#if DEDICATED_SERVER
-        Debug.Log("DEDICATED_SERVER Player Ready");
+        Debug.Log(playerReadyDictionary.Keys.Count);
+        playerReady = 0;
 
-        Debug.Log("ReadyServerForPlayersAsync");
-        await MultiplayService.Instance.ReadyServerForPlayersAsync();
+        foreach (bool ready in playerReadyDictionary.Values)
+        {
+            if (ready)
+            {
+                playerReady++;
+            }
+        }
 
-        Camera.main.enabled = false;
-#endif
+        playerReadyText.text = $"Player Ready {playerReady} / {playerReadyDictionary.Keys.Count}";
     }
 
     public void SetPlayerReady()
     {
-        SetPlayerReadyServerRpc();
+        RpcSendingPlayerReady();
     }
 
-    [ServerRpc(RequireOwnership = false)]
-    private void SetPlayerReadyServerRpc(ServerRpcParams serverRpcParams = default)
+    [Rpc(RpcSources.InputAuthority, RpcTargets.StateAuthority, HostMode = RpcHostMode.SourceIsHostPlayer)]
+    public void RpcSendingPlayerReady(RpcInfo info = default)
     {
-        //SetPlayerReadyClientRpc(serverRpcParams.Receive.SenderClientId);
-        TargetSetPlayerReadyClientRpc(serverRpcParams.Receive.SenderClientId);
-        Debug.Log("SetPlayerReadyServerRpc " + serverRpcParams.Receive.SenderClientId);
-        playerReadyDictionary[serverRpcParams.Receive.SenderClientId] = true;
+        RpcUpdatePlayerReady(info.Source);
+    }
 
-        bool allClientsReady = true;
-        foreach (ulong clientId in NetworkManager.Singleton.ConnectedClientsIds)
+    [Rpc(RpcSources.StateAuthority, RpcTargets.All, HostMode = RpcHostMode.SourceIsServer)]
+    public void RpcUpdatePlayerReady(PlayerRef player)
+    {
+        playerReady = 0;
+
+        if (playerReadyText == null)
         {
-            if (!playerReadyDictionary.ContainsKey(clientId) || !playerReadyDictionary[clientId])
+            playerReadyText = GameObject.FindAnyObjectByType<PlayerReady>().GetComponent<TextMeshProUGUI>();
+        }
+
+        if (player == Runner.LocalPlayer)
+        {
+            playerReadyDictionary[player] = true;
+        }
+
+        foreach(bool ready in playerReadyDictionary.Values)
+        {
+            if (ready)
             {
-                // This player is NOT ready
-                allClientsReady = false;
-                break;
+                playerReady++;
             }
         }
 
-        if (allClientsReady)
-        {
-            //OnGameStarting?.Invoke(this, EventArgs.Empty);
-            Loader.LoadNetwork(Loader.Scene.MatchScene);
-        }
+        playerReadyText.text = $"Player Ready {playerReady} / {playerReadyDictionary.Keys.Count}";
     }
 
-    [ClientRpc]
-    private void TargetSetPlayerReadyClientRpc(ulong clientId)
-    {
-        // Handle setting player ready on client side here
-        Debug.Log($"TargetSetPlayerReadyClientRpc called for client: {clientId}");
-    }
-
-    public void SetTest()
-    {
-        Debug.Log("Ping");
-        TestServerRpc();
-    }
-
-    [ServerRpc]
-    private void TestServerRpc(ServerRpcParams serverRpcParams = default)
-    {
-        TestClientRpc(serverRpcParams.Receive.SenderClientId);
-    }
-
-    [ClientRpc]
-    private void TestClientRpc(ulong client)
-    {
-        Debug.Log("Pong");
-    }
-
-    //[ClientRpc]
-    //private void SetPlayerReadyClientRpc(ulong clientId)
+    //[ServerRpc(RequireOwnership = false)]
+    //private void SetPlayerReadyServerRpc(ServerRpcParams serverRpcParams = default)
     //{
-    //    playerReadyDictionary[clientId] = true;
+    //    //SetPlayerReadyClientRpc(serverRpcParams.Receive.SenderClientId);
+    //    TargetSetPlayerReadyClientRpc(serverRpcParams.Receive.SenderClientId);
+    //    Debug.Log("SetPlayerReadyServerRpc " + serverRpcParams.Receive.SenderClientId);
+    //    playerReadyDictionary[serverRpcParams.Receive.SenderClientId] = true;
 
-    //    //OnReadyChanged?.Invoke(this, EventArgs.Empty);
+    //    bool allClientsReady = true;
+    //    foreach (ulong clientId in NetworkManager.Singleton.ConnectedClientsIds)
+    //    {
+    //        if (!playerReadyDictionary.ContainsKey(clientId) || !playerReadyDictionary[clientId])
+    //        {
+    //            // This player is NOT ready
+    //            allClientsReady = false;
+    //            break;
+    //        }
+    //    }
+
+    //    if (allClientsReady)
+    //    {
+    //        //OnGameStarting?.Invoke(this, EventArgs.Empty);
+    //        Loader.LoadNetwork(Loader.Scene.MatchScene);
+    //    }
     //}
 
-
-    //public bool IsPlayerReady(ulong clientId)
+    //[ClientRpc]
+    //private void TargetSetPlayerReadyClientRpc(ulong clientId)
     //{
-    //    return playerReadyDictionary.ContainsKey(clientId) && playerReadyDictionary[clientId];
+    //    // Handle setting player ready on client side here
+    //    Debug.Log($"TargetSetPlayerReadyClientRpc called for client: {clientId}");
     //}
 }

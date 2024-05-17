@@ -309,7 +309,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   playButton: {fileID: 233983922}
   quitButton: {fileID: 982378412}
-  findMatchGameObject: {fileID: 330487437}
+  createAndJoinGameObject: {fileID: 330487437}
 --- !u!1 &177543311
 GameObject:
   m_ObjectHideFlags: 0
@@ -852,7 +852,7 @@ GameObject:
   - component: {fileID: 330487438}
   - component: {fileID: 330487439}
   m_Layer: 5
-  m_Name: FindMatchUI
+  m_Name: CreateAndJoinUI
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -889,13 +889,11 @@ MonoBehaviour:
   m_GameObject: {fileID: 330487437}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 217e5c5f89d57a849835ad1e03688856, type: 3}
+  m_Script: {fileID: 11500000, guid: caaac34537d1ad54ebc08addd7365f3f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  findMatchButton: {fileID: 2012534961}
-  backButton: {fileID: 252383908}
-  mainMenu: {fileID: 81278248}
-  isFindingMatch: 0
+  createRoomButton: {fileID: 2012534961}
+  joinRoomButton: {fileID: 329116294}
 --- !u!1 &343036938
 GameObject:
   m_ObjectHideFlags: 0
@@ -1685,8 +1683,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8fb015f45f03cfe4cbafed21e775c45e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  createRoomButton: {fileID: 2012534961}
-  joinRoomButton: {fileID: 329116294}
 --- !u!1 &1419592881
 GameObject:
   m_ObjectHideFlags: 0

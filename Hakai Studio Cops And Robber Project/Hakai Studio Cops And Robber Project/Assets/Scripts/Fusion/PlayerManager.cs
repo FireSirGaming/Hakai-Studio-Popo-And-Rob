@@ -4,37 +4,14 @@ using System;
 using System.Collections.Generic;
 using Unity.VisualScripting;
 using UnityEngine;
-using UnityEngine.UI;
 using UnityEngine.SceneManagement;
 
-public class CreateAndJoinHost : MonoBehaviour, INetworkRunnerCallbacks
+public class PlayerManager : MonoBehaviour, INetworkRunnerCallbacks
 {
-    [SerializeField] private Button createRoomButton;
-    [SerializeField] private Button joinRoomButton;
-
     private NetworkRunner networkRunner;
+    public NetworkRunner NetworkRunner { get { return networkRunner; } }
 
-    private void Awake()
-    {
-        createRoomButton.onClick.AddListener(() =>
-        {
-            if (networkRunner == null)
-            {
-                RoomCreate(GameMode.Host);
-            }
-
-        });
-
-        joinRoomButton.onClick.AddListener(() =>
-        {
-            if (networkRunner == null)
-            {
-                RoomCreate(GameMode.Client);
-            }
-        });
-    }
-
-    async void RoomCreate(GameMode mode)
+    public async void RoomCreate(GameMode mode)
     {
         networkRunner = gameObject.AddComponent<NetworkRunner>();
         networkRunner.ProvideInput = true;
@@ -108,7 +85,11 @@ public class CreateAndJoinHost : MonoBehaviour, INetworkRunnerCallbacks
 
     public void OnPlayerJoined(NetworkRunner runner, PlayerRef player)
     {
-
+        if (runner.IsServer)
+        {
+            PlayerReadyManager playerReadyManager = GameObject.FindObjectOfType<PlayerReadyManager>();
+            playerReadyManager.PlayerReadyDictionary.Add(player, false);
+        }
     }
 
     public void OnPlayerLeft(NetworkRunner runner, PlayerRef player)

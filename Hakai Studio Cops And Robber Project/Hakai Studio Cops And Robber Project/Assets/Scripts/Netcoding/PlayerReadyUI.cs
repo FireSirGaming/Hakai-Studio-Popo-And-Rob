@@ -12,14 +12,14 @@ public class PlayerReadyUI : NetworkBehaviour
 
     public void Awake()
     {
-        readyButton.onClick.AddListener(() =>
-        {
-            PlayerReadyManager.Instance.SetPlayerReady();
-        });
+        //readyButton.onClick.AddListener(() =>
+        //{
+        //    PlayerReadyManager.Instance.SetPlayerReady();
+        //});
 
-        testButton.onClick.AddListener(() =>
-        {
-            PlayerReadyManager.Instance.SetTest();
-        });
+        //testButton.onClick.AddListener(() =>
+        //{
+        //    PlayerReadyManager.Instance.SetTest();
+        //});
     }
 }
