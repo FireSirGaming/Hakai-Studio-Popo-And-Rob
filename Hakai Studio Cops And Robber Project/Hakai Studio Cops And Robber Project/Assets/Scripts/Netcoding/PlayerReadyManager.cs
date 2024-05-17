@@ -4,9 +4,10 @@ using System.Collections.Generic;
 using Fusion;
 using TMPro;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
-public class PlayerReadyManager : NetworkBehaviour
+public class PlayerReadyManager : NetworkBehaviour, IPlayerJoined, IPlayerLeft
 {
     public static PlayerReadyManager Instance { get; private set; }
 
@@ -24,28 +25,12 @@ public class PlayerReadyManager : NetworkBehaviour
         playerReadyText = GameObject.FindAnyObjectByType<PlayerReady>().GetComponentInChildren<TextMeshProUGUI>();
     }
 
-    private void Start()
-    {
-        Debug.Log(playerReadyDictionary.Keys.Count);
-        playerReady = 0;
-
-        foreach (bool ready in playerReadyDictionary.Values)
-        {
-            if (ready)
-            {
-                playerReady++;
-            }
-        }
-
-        playerReadyText.text = $"Player Ready {playerReady} / {playerReadyDictionary.Keys.Count}";
-    }
-
     public void SetPlayerReady()
     {
         RpcSendingPlayerReady();
     }
 
-    [Rpc(RpcSources.InputAuthority, RpcTargets.StateAuthority, HostMode = RpcHostMode.SourceIsHostPlayer)]
+    [Rpc(RpcSources.All, RpcTargets.StateAuthority, HostMode = RpcHostMode.SourceIsHostPlayer)]
     public void RpcSendingPlayerReady(RpcInfo info = default)
     {
         RpcUpdatePlayerReady(info.Source);
@@ -67,6 +52,52 @@ public class PlayerReadyManager : NetworkBehaviour
         }
 
         foreach(bool ready in playerReadyDictionary.Values)
+        {
+            if (ready)
+            {
+                playerReady++;
+            }
+        }
+
+        playerReadyText.text = $"Player Ready {playerReady} / {playerReadyDictionary.Keys.Count}";
+
+        if (Runner.IsServer)
+        {
+            bool allPlayersReady = true;
+
+            foreach(bool ready in playerReadyDictionary.Values)
+            {
+                if (!ready)
+                {
+                    allPlayersReady = false;
+                    return;
+                }
+            }
+
+            SceneManager.LoadScene(2);
+        }
+    }
+
+    public void PlayerJoined(PlayerRef player)
+    {
+        if (Runner.IsServer)
+        {
+            playerReadyDictionary.Add(player, false);
+            UpdatePLayerReady();
+        }
+    }
+
+    public void PlayerLeft(PlayerRef player)
+    {
+        playerReadyDictionary.Remove(player);
+        UpdatePLayerReady();
+    }
+
+    public void UpdatePLayerReady()
+    {
+        playerReady = 0;
+
+        foreach (bool ready in playerReadyDictionary.Values)
         {
             if (ready)
             {

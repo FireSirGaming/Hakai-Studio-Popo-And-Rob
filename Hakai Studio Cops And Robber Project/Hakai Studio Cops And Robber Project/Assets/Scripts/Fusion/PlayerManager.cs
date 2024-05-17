@@ -11,6 +11,12 @@ public class PlayerManager : MonoBehaviour, INetworkRunnerCallbacks
     private NetworkRunner networkRunner;
     public NetworkRunner NetworkRunner { get { return networkRunner; } }
 
+    private List<PlayerRef> playersRef = new List<PlayerRef>();
+    public List<PlayerRef> PlayersRef { get {  return playersRef; } }
+
+    //private Dictionary<PlayerRef, NetworkObject> playerCharacters = new Dictionary<PlayerRef, NetworkObject>();
+    //public Dictionary<PlayerRef, NetworkObject> PlayerCharacters { get { return playerCharacters; } }
+
     public async void RoomCreate(GameMode mode)
     {
         networkRunner = gameObject.AddComponent<NetworkRunner>();
@@ -87,14 +93,13 @@ public class PlayerManager : MonoBehaviour, INetworkRunnerCallbacks
     {
         if (runner.IsServer)
         {
-            PlayerReadyManager playerReadyManager = GameObject.FindObjectOfType<PlayerReadyManager>();
-            playerReadyManager.PlayerReadyDictionary.Add(player, false);
+            playersRef.Add(player);
         }
     }
 
     public void OnPlayerLeft(NetworkRunner runner, PlayerRef player)
     {
-
+        playersRef.Remove(player);
     }
 
     public void OnReliableDataProgress(NetworkRunner runner, PlayerRef player, ReliableKey key, float progress)

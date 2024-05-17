@@ -12,14 +12,7 @@ public class PlayerReady : NetworkBehaviour
     {
         readyButton.onClick.AddListener(() =>
         {
-            if (Object.HasInputAuthority)
-            {
-                PlayerReadyManager.Instance.SetPlayerReady();
-            }
-            else
-            {
-                Debug.Log($"{Runner.LocalPlayer} has no input authority!");
-            }
+            PlayerReadyManager.Instance.SetPlayerReady();
         });
     }
 }
