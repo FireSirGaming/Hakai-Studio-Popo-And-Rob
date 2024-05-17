@@ -35,7 +35,7 @@ public class FindMatchUI : MonoBehaviour
 
             if (!isFindingMatch)
             {
-                FindMatch();
+                //FindMatch();
                 isFindingMatch = true;
             }
 
